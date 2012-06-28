@@ -34,7 +34,7 @@ def p():
     """Create a paragraph break.  In reST that is 2 newlines."""
     return '\n\n'
 
-def _table(self, title, headers, rows, width=None, anchor_text=None,
+def table(self, title, headers, rows, width=None, anchor_text=None,
         heading_level=3):
     """The 'columns need to be as 'wide' as the widest
        data element within a cell.
