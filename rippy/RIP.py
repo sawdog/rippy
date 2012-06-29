@@ -165,3 +165,10 @@ class Table(object):
         # XXX give a 'paragraph' between the table and whatever follows
         text.append(p())
         return join(text, '   ')
+
+
+def table(*args, **kw):
+    """
+    Utility factory for creating tables in the same way as other objects.
+    """
+    return Table(*args, **kw)
