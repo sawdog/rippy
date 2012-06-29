@@ -78,12 +78,11 @@ class Table(object):
         self.rows = rows
         self.anchor_text = anchor_text
         self.heading_level = heading_level
+        self.text = []
 
     def __call__(self):
         anchor_text = ''
         col_widths = {}
-        text = []
-        title = self.title
 
         # if there is no title, the anchor is not useful
         if title:
@@ -165,6 +164,22 @@ class Table(object):
         # XXX give a 'paragraph' between the table and whatever follows
         text.append(p())
         return join(text, '   ')
+
+    @property
+    def title(self):
+        if not self.title:
+            return self.text.append('\n')
+        if anchor_text:
+            anchor_text = anchor(self.anchor_text)
+        table_header = header(title, self.heading_level)
+        self.text.append(anchor_text + table_header)
+
+    @title.setter
+    def title(self, title):
+        """
+        """
+        self.title = title
+
 
 
 def table(*args, **kw):
