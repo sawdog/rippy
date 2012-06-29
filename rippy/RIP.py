@@ -1,7 +1,5 @@
 """the main library for rippy -- RIP"""
 
-from string import join
-
 header_levels = {1: '#',
                 2: '*',
                 3: '=',
@@ -54,6 +52,10 @@ def ref(label, text=None):
                                              'label': label}
 
 
+def toctree(tree, maxdepth=1, *args):
+    """return a toctree tag with tree items and args as toctree options"""
+    pass
+
 class Table(object):
     """Simple reST Table creator."""
 
@@ -98,7 +100,7 @@ class Table(object):
 
         if not self.rows:
             text.append('None\n\n')
-            return join(text, '')
+            return ''.join(text)
 
         # now format the columns/rows...
         col_data = {}
@@ -141,11 +143,11 @@ class Table(object):
                 width=size))
 
         # there should be AT LEAST 2 spaces between 'columns' in the table
-        text.append(join(hdl, '    '))
+        text.append('    '.join(hdl))
         text.append('\n')
-        text.append(join(items, '    '))
+        text.append('    '.join(items))
         text.append('\n')
-        text.append(join(hdl, '    '))
+        text.append('    '.join(hdl))
         text.append('\n')
 
         # now go back through the column_data and put it into the table
@@ -157,11 +159,11 @@ class Table(object):
                 columns.append(col_format.format(c, fill=' ', align='<',
                     width=size))
 
-            text.append(join(columns, '    '))
+            text.append('    '.join(columns))
             text.append('\n')
 
         # after all the columns have been formatted...
-        text.append(join(hdl, '    '))
+        text.append('    '.join(hdl))
         # XXX give a 'paragraph' between the table and whatever follows
         text.append(p())
-        return join(text, '   ')
+        return '   '.join(text)
