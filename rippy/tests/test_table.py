@@ -16,3 +16,8 @@ class TestTable(TestCase):
     def test_no_title(self):
         Table = self.make_one()
         self.assertEqual(Table.title, "\n")
+
+    def test_no_rows(self):
+        Table = self.make_one()
+        self.assertFalse(Table.rows)
+        self.assertEqual(Table(), "\nNone\n\n")

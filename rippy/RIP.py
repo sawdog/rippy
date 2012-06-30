@@ -79,35 +79,17 @@ class Table(object):
         self.anchor_text = anchor_text
         self.heading_level = heading_level
         self.text = []
+        self.col_widths = {}
 
     def __call__(self):
         anchor_text = ''
-        col_widths = {}
 
         # if there is no title, the anchor is not useful
         self.text.append(self.title)
 
         if not self.rows:
-            text.append('None\n\n')
-            return join(text, '')
-
-        # now format the columns/rows...
-        col_data = {}
-        # for each of the columns in the rows, we have to find the 'widest'
-        for ridx, row in enumerate(self.rows):
-            columns = []
-            for idx, column in enumerate(row):
-                if column:
-                    size = len(str(column))
-                    # if the column size is larger, replace the val
-                    if size > col_widths.get(idx):
-                        col_widths.update({idx: size})
-                    columns.append(str(column))
-                else:
-                    # XXX forgot why I'm doing this...duh
-                    columns.append('....')
-
-            col_data.update({ridx: columns})
+            self.text.append('None\n\n')
+            return ''.join(self.text)
 
         # now begin formatting the table, with the headers
         col_format = '{0:{fill}{align}{width}}'
@@ -169,6 +151,34 @@ class Table(object):
     @title.setter
     def title(self, title):
         self._title = title
+
+
+    @property
+    def rows(self):
+        if not self._rows:
+            return
+        # now format the columns/rows...
+        col_data = {}
+        # for each of the columns in the rows, we have to find the 'widest'
+        for ridx, row in enumerate(self._rows):
+            columns = []
+            for idx, column in enumerate(row):
+                if column:
+                    size = len(str(column))
+                    # if the column size is larger, replace the val
+                    if size > col_widths.get(idx):
+                        col_widths.update({idx: size})
+                    columns.append(str(column))
+                else:
+                    # XXX forgot why I'm doing this...duh
+                    columns.append('....')
+
+            col_data.update({ridx: columns})
+        return col_data
+
+    @rows.setter
+    def rows(self, rows):
+        self._rows = rows
 
 
 def table(*args, **kw):
