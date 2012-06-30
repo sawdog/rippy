@@ -85,15 +85,7 @@ class Table(object):
         col_widths = {}
 
         # if there is no title, the anchor is not useful
-        if title:
-            if anchor_text:
-                anchor_text = anchor(self.anchor_text)
-            table_header = header(title, self.heading_level)
-            text.append(anchor_text + table_header)
-
-        else:
-            # this is needed to ensure the proper column header alignment
-            text.append('\n')
+        self.text.append(self.title)
 
         if not self.rows:
             text.append('None\n\n')
@@ -168,18 +160,15 @@ class Table(object):
     @property
     def title(self):
         if not self.title:
-            return self.text.append('\n')
+            return '\n'
         if anchor_text:
             anchor_text = anchor(self.anchor_text)
         table_header = header(title, self.heading_level)
-        self.text.append(anchor_text + table_header)
+        return anchor_text + table_header
 
     @title.setter
     def title(self, title):
-        """
-        """
         self.title = title
-
 
 
 def table(*args, **kw):
