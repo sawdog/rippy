@@ -57,6 +57,8 @@ def ref(label, text=None):
 class Table(object):
     """Simple reST Table creator."""
 
+    col_format = '{0:{fill}{align}{width}}'
+
     def __init__(self, title, headers, rows, anchor_text=None,
             heading_level=3):
         """Allow for justifiying in columns?
@@ -90,28 +92,10 @@ class Table(object):
         if not self.rows:
             self.text.append('None\n\n')
             return ''.join(self.text)
+        col_data = self.create_columns()
 
         # now begin formatting the table, with the headers
-        col_format = '{0:{fill}{align}{width}}'
-        hdl = []
-        items = []
-        for idx, h in enumerate(self.headers):
-            # XXX padding the header makes things look better....
-            h = '      %s      ' % h
-            size = len(h)
-            # if the header is smaller then the largest column
-            # use the widest...
-            if size < col_widths.get(idx):
-                size = col_widths.get(idx)
-            else:
-                col_widths.update({idx: size})
-
-            # hval is just a bunch of '=' signs
-            hval = col_format.format('', fill='=', align='<', width=size)
-            hdl.append(hval)
-            # now format the header
-            items.append(col_format.format(h, fill=' ', align='<',
-                width=size))
+        hdl, items = self.format_columns()
 
         # there should be AT LEAST 2 spaces between 'columns' in the table
         text.append(join(hdl, '    '))
@@ -152,33 +136,48 @@ class Table(object):
     def title(self, title):
         self._title = title
 
-
-    @property
-    def rows(self):
-        if not self._rows:
-            return
-        # now format the columns/rows...
+    def create_columns(self):
+        """
+        Convert rows into columns accessible by row number.
+        """
         col_data = {}
         # for each of the columns in the rows, we have to find the 'widest'
-        for ridx, row in enumerate(self._rows):
+        for ridx, row in enumerate(self.rows):
             columns = []
             for idx, column in enumerate(row):
+                column = str(column) # ensure we have a string
                 if column:
-                    size = len(str(column))
-                    # if the column size is larger, replace the val
-                    if size > col_widths.get(idx):
-                        col_widths.update({idx: size})
-                    columns.append(str(column))
+                    size = len(column)
+                    if size > col_widths.get(idx, 0):
+                        col_widths[idx] = size
+                    columns.append(column)
                 else:
                     # XXX forgot why I'm doing this...duh
                     columns.append('....')
 
-            col_data.update({ridx: columns})
+            col_data[ridx] = columns
         return col_data
 
-    @rows.setter
-    def rows(self, rows):
-        self._rows = rows
+    def create_headers(self):
+        """
+        """
+        hdl = []
+        items = []
+        for idx, h in enumerate(self.headers):
+            # XXX padding the header makes things look better....
+            h = '      %s      ' % h
+            size = len(h)
+            # if the header is smaller then the largest column
+            # use the widest...
+            self.col_widths[idx] = max(size, self.col_widths[idx])
+
+            # hval is just a bunch of '=' signs
+            hval = self.col_format.format('', fill='=', align='<', width=size)
+            hdl.append(hval)
+            # now format the header
+            items.append(self.col_format.format(h, fill=' ', align='<',
+                width=size))
+        return hdl, items
 
 
 def table(*args, **kw):
