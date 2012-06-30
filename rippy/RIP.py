@@ -80,17 +80,17 @@ class Table(object):
         self.rows = rows
         self.anchor_text = anchor_text
         self.heading_level = heading_level
-        self.text = []
         self.col_widths = {}
 
     def __call__(self):
         anchor_text = ''
+        text = []
 
         # if there is no title, the anchor is not useful
         self.text.append(self.title)
 
         if not self.rows:
-            self.text.append('None\n\n')
+            text.append('None\n\n')
             return ''.join(self.text)
         col_data = self.create_columns()
 
@@ -98,30 +98,20 @@ class Table(object):
         hdl, items = self.format_columns()
 
         # there should be AT LEAST 2 spaces between 'columns' in the table
-        text.append(join(hdl, '    '))
+        text.append('    '.join(hdl))
         text.append('\n')
-        text.append(join(items, '    '))
+        text.append('    '.join(items))
         text.append('\n')
-        text.append(join(hdl, '    '))
+        text.append('    '.join(hdl))
         text.append('\n')
 
-        # now go back through the column_data and put it into the table
-        for col in col_data:
-            columns = []
-            cols = col_data.get(col)
-            for idx, c in enumerate(cols):
-                size = col_widths.get(idx)
-                columns.append(col_format.format(c, fill=' ', align='<',
-                    width=size))
-
-            text.append(join(columns, '    '))
-            text.append('\n')
+        text = self.format_columns(col_data, text)
 
         # after all the columns have been formatted...
-        text.append(join(hdl, '    '))
+        text.append('    '.join(hdl))
         # XXX give a 'paragraph' between the table and whatever follows
         text.append(p())
-        return join(text, '   ')
+        return '   '.join(text)
 
     @property
     def title(self):
@@ -178,6 +168,21 @@ class Table(object):
             items.append(self.col_format.format(h, fill=' ', align='<',
                 width=size))
         return hdl, items
+
+    def format_columns(self, col_data, text):
+        """
+        """
+        for col in col_data:
+            columns = []
+            cols = col_data.get(col)
+            for idx, c in enumerate(cols):
+                size = self.col_widths.get(idx)
+                columns.append(self.col_format.format(c, fill=' ', align='<',
+                    width=size))
+
+            self.text.append(join(columns, '    '))
+            self.text.append('\n')
+        return text
 
 
 def table(*args, **kw):
