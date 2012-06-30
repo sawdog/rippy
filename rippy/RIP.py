@@ -159,7 +159,7 @@ class Table(object):
 
     @property
     def title(self):
-        if not self.title:
+        if not self._title:
             return '\n'
         if anchor_text:
             anchor_text = anchor(self.anchor_text)
@@ -168,7 +168,7 @@ class Table(object):
 
     @title.setter
     def title(self, title):
-        self.title = title
+        self._title = title
 
 
 def table(*args, **kw):

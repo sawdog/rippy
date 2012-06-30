@@ -7,5 +7,12 @@ class TestTable(TestCase):
         from rippy.RIP import Table
         return Table
 
+    def make_one(self):
+        return self.get_target_class()(
+            title=None,
+            headers=None,
+            rows=None)
+
     def test_no_title(self):
-        Table = self.get_target_class()
+        Table = self.make_one()
+        self.assertEqual(Table.title, "\n")
