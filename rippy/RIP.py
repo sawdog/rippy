@@ -163,21 +163,9 @@ class Table(object):
         headers = "    ".join(headers)
         return [self.lines, ["\n"], headers, ["\n"], self.lines]
 
-    @property
-    def lines(self):
-        """
-        Return a line of equals signs
-        """
-        lines = getattr(self, "_lines", [])
-        if not lines:
-            for idx, h in enumerate(self._headers):
-                lines.append(
-                    self.col_format.format('', fill='=', align='<', width=size)
-                )
-        self._lines = lines
-        return lines
 
-    @headers.setters(self, values):
+    @headers.setters:
+        def headers(self, values)
         """
         Calculate max column widths from headers
         """
@@ -185,6 +173,21 @@ class Table(object):
         for idx, v in enumerate(values):
             size = len(v) + 14
             self.col_widths[idx] = max(size, self.col_widths[idx])
+
+    @property
+    def lines(self):
+        """
+        Return a line of equals signs
+        """
+        lines = getattr(self, "_lines", None)
+        if not lines:
+            lines = []
+            for idx, h in enumerate(self._headers):
+                lines.append(
+                    self.col_format.format('', fill='=', align='<', width=size)
+                )
+        self._lines = lines
+        return lines
 
 
 def table(*args, **kw):
