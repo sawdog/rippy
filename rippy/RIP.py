@@ -191,6 +191,36 @@ class Table(object):
         return rows
 
 
+    @property
+    def rows(self):
+        """
+        Return nicely formatted rows of data
+        """
+        pass
+
+    @rows.setter
+    def rows(self, values):
+        """
+        Calculate max column widths from row data
+        """
+        pass
+
+
+    @property
+    def headers(self):
+        """
+        Return nicely formatted headers, topped and tailed by lines
+        of = signs
+        """
+        pass
+
+    @headers.setters(self, values):
+        """
+        Calculate max column widths from headers
+        """
+        pass
+
+
 def table(*args, **kw):
     """
     Utility factory for creating tables in the same way as other objects.
