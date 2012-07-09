@@ -95,23 +95,10 @@ class Table(object):
             text.append('None\n\n')
             return ''.join(text)
 
-        col_data = self.create_columns()
-
-        # now begin formatting the table, with the headers
-        hdl, items = self.create_headers()
-
-        # XXX add a header formatting method....
-        # there should be AT LEAST 2 spaces between 'columns' in the table
-        text.append('    '.join(hdl))
-        text.append('\n')
-        text.append('    '.join(items))
-        text.append('\n')
-        text.append('    '.join(hdl))
-        text.append('\n')
-
-        text.extend(self.format_columns(col_data))
+        text.extend(self.headers)
+        text.extend(self.rows)
         # after all the columns have been formatted...
-        text.append('    '.join(hdl))
+        text.append(self.lines)
         # XXX give a 'paragraph' between the table and whatever follows
         text.append(p())
         return '   '.join(text)
@@ -131,13 +118,29 @@ class Table(object):
     def title(self, title):
         self._title = title
 
-    def create_columns(self):
+    @property
+    def rows(self):
         """
-        Convert rows into columns accessible by row number.
+        Return nicely formatted rows of data
         """
-        col_data = {}
-        # for each of the columns in the rows, we have to find the 'widest'
-        for ridx, row in enumerate(self.rows):
+        result = []
+        for row in self._rows:
+            columns = []
+            for idx, c in enumerate(row):
+                size = self.col_widths.get(idx)
+                columns.append(self.col_format.format(c, fill=' ', align='<',
+                    width=size))
+            result.append('    '.join(columns))
+            result.append('\n')
+        return result
+
+    @rows.setter
+    def rows(self, values):
+        """
+        Calculate max column widths from row data
+        """
+        self._rows = rows
+        for ridx, row in enumerate(values):
             columns = []
             for idx, column in enumerate(row):
                 column = str(column) # ensure we have a string
@@ -145,66 +148,6 @@ class Table(object):
                     size = len(column)
                     if size > col_widths.get(idx, 0):
                         col_widths[idx] = size
-                    columns.append(column)
-                else:
-                    # If missing a column in the rows just pad with space.
-                    columns.append('   ')
-
-            col_data[ridx] = columns
-        return col_data
-
-    def create_headers(self):
-        """Create the table row headers"""
-        hdl = []
-        items = []
-        for idx, h in enumerate(self.headers):
-            # XXX padding the header makes things look better....
-            h = '      %s      ' % h
-            size = len(h)
-            # if the header is smaller then the largest column
-            # use the widest...
-            self.col_widths[idx] = max(size, self.col_widths[idx])
-
-            # hval is just a bunch of '=' signs
-            hval = self.col_format.format('', fill='=', align='<', width=size)
-            hdl.append(hval)
-            # now format the header, adding spaces to fill the appropriate size
-            items.append(self.col_format.format(h, fill=' ', align='<',
-                width=size))
-
-        return hdl, items
-
-    def format_columns(self, col_data):
-        """
-        """
-        rows = []
-        for col in col_data:
-            columns = []
-            cols = col_data.get(col)
-            for idx, c in enumerate(cols):
-                size = self.col_widths.get(idx)
-                columns.append(self.col_format.format(c, fill=' ', align='<',
-                    width=size))
-
-            rows.append('    '.join(columns))
-            rows.append('\n')
-        return rows
-
-
-    @property
-    def rows(self):
-        """
-        Return nicely formatted rows of data
-        """
-        pass
-
-    @rows.setter
-    def rows(self, values):
-        """
-        Calculate max column widths from row data
-        """
-        pass
-
 
     @property
     def headers(self):
@@ -212,13 +155,36 @@ class Table(object):
         Return nicely formatted headers, topped and tailed by lines
         of = signs
         """
-        pass
+        hdl = []
+        items = []
+        for idx, h in enumerate(self._headers):
+            items.append(self.col_format.format(h, fill=' ', align='<',
+                width=size))
+        headers = "    ".join(headers)
+        return [self.lines, ["\n"], headers, ["\n"], self.lines]
+
+    @property
+    def lines(self):
+        """
+        Return a line of equals signs
+        """
+        lines = getattr(self, "_lines", [])
+        if not lines:
+            for idx, h in enumerate(self._headers):
+                lines.append(
+                    self.col_format.format('', fill='=', align='<', width=size)
+                )
+        self._lines = lines
+        return lines
 
     @headers.setters(self, values):
         """
         Calculate max column widths from headers
         """
-        pass
+        self._headers = values
+        for idx, v in enumerate(values):
+            size = len(v) + 14
+            self.col_widths[idx] = max(size, self.col_widths[idx])
 
 
 def table(*args, **kw):
