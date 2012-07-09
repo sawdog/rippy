@@ -177,7 +177,7 @@ class Table(object):
     def format_columns(self, col_data):
         """
         """
-        text = []
+        rows = []
         for col in col_data:
             columns = []
             cols = col_data.get(col)
@@ -186,9 +186,9 @@ class Table(object):
                 columns.append(self.col_format.format(c, fill=' ', align='<',
                     width=size))
 
-            text.append('    '.join(columns))
-            text.append('\n')
-        return text
+            rows.append('    '.join(columns))
+            rows.append('\n')
+        return rows
 
 
 def table(*args, **kw):
