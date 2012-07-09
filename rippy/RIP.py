@@ -78,8 +78,8 @@ class Table(object):
 
         """
         self.title = title
-        self.headers = headers
         self.rows = rows
+        self.headers = headers
         self.anchor_text = anchor_text
         self.heading_level = heading_level
         self.col_widths = {}
