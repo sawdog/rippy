@@ -24,6 +24,11 @@ def doc(link, text=None):
                                            'link': link}
 
 
+def download(path, text):
+    """Generate the rst download syntax"""
+    return ':download:`%s <%s>`' % (text, path)
+
+
 def header(text, level):
     """Generate a header of a given level"""
     return '%(text)s\n%(uline)s\n\n' % {'text': text,
@@ -56,12 +61,13 @@ def toctree(tree, maxdepth=1, *args):
     """return a toctree tag with tree items and args as toctree options"""
     pass
 
+
 class Table(object):
     """Simple reST Table creator."""
 
     col_format = '{0:{fill}{align}{width}}'
 
-    def __init__(self, title, headers, rows, anchor_text=None,
+    def __init__(self, title=None, headers=(), rows=(), anchor_text=None,
             heading_level=3):
         """Allow for justifiying in columns?
 
@@ -77,39 +83,37 @@ class Table(object):
            heading_level is the level of the title of the table being created.
 
         """
+        self.col_widths = {}
         self.title = title
         self.rows = rows
         self.headers = headers
         self.anchor_text = anchor_text
         self.heading_level = heading_level
-        self.col_widths = {}
 
     def __call__(self):
-        anchor_text = ''
-        text = []
+        text = [self.title, ]
 
-        # if there is no title, the anchor is not useful
-        text.append(self.title)
-
-        if not self.rows:
+        if (not self.headers and not self.rows) or not self.headers:
             text.append('None\n\n')
             return ''.join(text)
 
         text.extend(self.headers)
         text.extend(self.rows)
         # after all the columns have been formatted...
-        text.append(self.lines)
+        text.append('    '.join(self.lines))
         # XXX give a 'paragraph' between the table and whatever follows
         text.append(p())
         return '   '.join(text)
 
     @property
     def title(self):
-        if not self._title:
+        title = self._title
+        if not title:
             return '\n'
 
+        anchor_text = self.anchor_text and self.anchor_text or ''
         if anchor_text:
-            anchor_text = anchor(self.anchor_text)
+            anchor_text = anchor(anchor_text)
 
         table_header = header(title, self.heading_level)
         return anchor_text + table_header
@@ -139,15 +143,16 @@ class Table(object):
         """
         Calculate max column widths from row data
         """
-        self._rows = rows
+        self._rows = values
         for ridx, row in enumerate(values):
             columns = []
             for idx, column in enumerate(row):
-                column = str(column) # ensure we have a string
+                # ensure we have a string
+                column = str(column)
                 if column:
                     size = len(column)
-                    if size > col_widths.get(idx, 0):
-                        col_widths[idx] = size
+                    if size > self.col_widths.get(idx, 0):
+                        self.col_widths[idx] = size
 
     @property
     def headers(self):
@@ -155,34 +160,46 @@ class Table(object):
         Return nicely formatted headers, topped and tailed by lines
         of = signs
         """
-        hdl = []
-        items = []
+        headers = []
+        if not self._headers:
+            return headers
+
+        lines = '    '.join(self.lines)
+        items = [lines, '\n']
         for idx, h in enumerate(self._headers):
-            items.append(self.col_format.format(h, fill=' ', align='<',
+            size = self.col_widths.get(idx)
+            # center the header in the column
+            headers.append(self.col_format.format(h, fill=' ', align='^',
                 width=size))
-        headers = "    ".join(headers)
-        return [self.lines, ["\n"], headers, ["\n"], self.lines]
+        items.append('    '.join(headers))
+        items.append('\n')
+        items.append(lines)
+        items.append('\n')
+        return items
 
 
-    @headers.setters:
-        def headers(self, values)
+    @headers.setter
+    def headers(self, values):
         """
         Calculate max column widths from headers
         """
         self._headers = values
         for idx, v in enumerate(values):
+            # pad the header values with extra space - looks better in tables
             size = len(v) + 14
-            self.col_widths[idx] = max(size, self.col_widths[idx])
+            width = self.col_widths.get(idx, 0)
+            self.col_widths[idx] = max(size, width)
 
     @property
     def lines(self):
         """
         Return a line of equals signs
         """
-        lines = getattr(self, "_lines", None)
+        lines = getattr(self, '_lines', None)
         if not lines:
             lines = []
             for idx, h in enumerate(self._headers):
+                size = self.col_widths.get(idx)
                 lines.append(
                     self.col_format.format('', fill='=', align='<', width=size)
                 )
@@ -194,4 +211,4 @@ def table(*args, **kw):
     """
     Utility factory for creating tables in the same way as other objects.
     """
-    return Table(*args, **kw)
+    return Table(*args, **kw)()

@@ -36,6 +36,6 @@ setup(name='rippy',
       Topic :: Software Development :: Libraries :: Python Modules
       Topic :: Utilities""".splitlines() if f.strip()],
       scripts = scripts,
-      install_requires = [],
+      install_requires = ['nose'],
 )
 
