@@ -29,16 +29,16 @@ def download(path, text):
     return ':download:`%s <%s>`' % (text, path)
 
 
+def emphasis(text):
+    """emphasize text"""
+    return '*%s*' % text
+
+
 def header(text, level):
     """Generate a header of a given level"""
     return '%(text)s\n%(uline)s\n\n' % {'text': text,
                                         'uline': header_levels.get(level) *\
                                                 len(text)}
-
-
-def emphasis(self, text):
-    """emphasize text"""
-    return '*%s*' % text
 
 
 def note(text):
@@ -176,7 +176,6 @@ class Table(object):
         items.append(lines)
         items.append('\n')
         return items
-
 
     @headers.setter
     def headers(self, values):
