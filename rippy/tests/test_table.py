@@ -7,8 +7,8 @@ class TestTable(TestCase):
         from rippy.RIP import Table
         return Table
 
-    def make_one(self):
-        return self.get_target_class()()
+    def make_one(self, **kw):
+        return self.get_target_class()(**kw)
 
     def test_default_anchor_text(self):
         table = self.make_one()
@@ -17,10 +17,6 @@ class TestTable(TestCase):
     def test_default_heading_level(self):
         table = self.make_one()
         self.assertEqual(table.heading_level, 3)
-
-    def test_default_title(self):
-        table = self.make_one()
-        self.assertEqual(table.title, "\n")
 
     def test_default_rows(self):
         """Test the default Table behavior for the rows.
@@ -54,6 +50,10 @@ class TestTable(TestCase):
         table = self.make_one()
         self.assertEqual(table(), "\nNone\n\n")
 
+    def test_default_title(self):
+        table = self.make_one()
+        self.assertEqual(table.title, "\n")
+
     def test_no_title_anchor_text(self):
         """If anchor text is supplied and no title, it doesn't mean
            a lot - so just acts as if there's no title and no anchor
@@ -63,6 +63,18 @@ class TestTable(TestCase):
         table = self.make_one()
         table.anchor_text = '.. _foo:\n\n'
         self.assertEqual(table.title, '\n')
+
+    def test_title_no_anchor_text(self):
+        """title with no anchor text"""
+        table = self.make_one(title='Foo')
+        expected = 'Foo\n===\n\n'
+        self.assertEqual(table.title, expected)
+
+    def test_title_with_anchor_text(self):
+        """title with accompanying anchor name"""
+        table = self.make_one(title='Foo', anchor_text='xxx-foo')
+        expected = '.. _xxx-foo:\n\nFoo\n===\n\n'
+        self.assertEqual(table.title, expected)
 
     def test_headers(self):
         """Test the getting and setting of the table headers.
