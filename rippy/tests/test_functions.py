@@ -4,6 +4,14 @@ from unittest import TestCase
 class TestFunctions(TestCase):
     """Test the various rst helper functions"""
 
+
+    def test_no_anchor(self):
+        """Only add anchors if we have names"""
+        from rippy.RIP import anchor
+        self.assertEqual(anchor(None), '')
+        self.assertEqual(anchor(''), '')
+        self.assertEqual(anchor(False), '')
+
     def test_anchor(self):
         """test the anchor function returns markup as expected"""
         from rippy.RIP import anchor
@@ -47,7 +55,9 @@ class TestFunctions(TestCase):
         self.assertEqual(header('foo', 4), expected % {'level': '---'})
         self.assertEqual(header('foo', 5), expected % {'level': '^^^'})
         self.assertEqual(header('foo', 6), expected % {'level': '"""'})
-        self.assertRaises(TypeError, header, 'foo', 7)
+        # no text returns ''
+        self.assertEqual(header('', 1), '')
+        self.assertRaises(KeyError, header, 'foo', 7)
 
     def test_note(self):
         """test the note function returns markup as expected"""

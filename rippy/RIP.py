@@ -38,8 +38,10 @@ def emphasis(text):
 
 def header(text, level):
     """Generate a header of a given level"""
+    if not text:
+        return ''
     return '%(text)s\n%(uline)s\n\n' % {'text': text,
-                                        'uline': header_levels.get(level) *\
+                                        'uline': header_levels[level] *\
                                                 len(text)}
 
 
@@ -67,7 +69,7 @@ def toctree(tree, maxdepth=1, *args):
 class Table(object):
     """Simple reST Table creator."""
 
-    col_format = '{0:{fill}{align}{width}}'
+    col_format = '{value:{fill}{align}{width}}'
 
     def __init__(self, title=None, headers=(), rows=(), anchor_text=None,
             heading_level=3):
@@ -108,16 +110,13 @@ class Table(object):
         return '   '.join(text)
 
 
-
     @property
     def title(self):
         title = self._title
-        if not title:
-            return '\n'
-
         table_header = header(title, self.heading_level)
-
-        return anchor(self.anchor_text) + table_header
+        if table_header:
+            return anchor(self.anchor_text) + table_header
+        return '\n'
 
     @title.setter
     def title(self, title):
@@ -133,8 +132,9 @@ class Table(object):
             columns = []
             for idx, c in enumerate(row):
                 size = self.col_widths.get(idx)
-                columns.append(self.col_format.format(c, fill=' ', align='<',
-                    width=size))
+                columns.append(self.col_format.format(
+                    value=c, fill=' ', align='<', width=size)
+                               )
             result.append('    '.join(columns))
             result.append('\n')
         return result
@@ -170,8 +170,9 @@ class Table(object):
         for idx, h in enumerate(self._headers):
             size = self.col_widths.get(idx)
             # center the header in the column
-            headers.append(self.col_format.format(h, fill=' ', align='^',
-                width=size))
+            headers.append(self.col_format.format(
+                value=h, fill=' ', align='^',  width=size)
+                           )
         items.append('    '.join(headers))
         items.append('\n')
         items.append(lines)
@@ -201,7 +202,9 @@ class Table(object):
             for idx, h in enumerate(self._headers):
                 size = self.col_widths.get(idx)
                 lines.append(
-                    self.col_format.format('', fill='=', align='<', width=size)
+                    self.col_format.format(
+                        value='', fill='=', align='<', width=size
+                    )
                 )
         self._lines = lines
         return lines
