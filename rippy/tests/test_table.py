@@ -3,6 +3,8 @@ from unittest import TestCase
 
 class TestTable(TestCase):
 
+    default_headers = ['One', 'Two', 'Three']
+
     def get_target_class(self):
         from rippy.RIP import Table
         return Table
@@ -65,7 +67,7 @@ class TestTable(TestCase):
         table = self.make_one()
         self.assertEqual(table(), "\nNone\n\n")
 
-    def test_headers(self):
+    def test_set_headers(self):
         """Test the getting and setting of the table headers.
 
            setting the headers tracks the column widths - to ensure that
@@ -76,11 +78,9 @@ class TestTable(TestCase):
            headers as part of the table.
 
         """
-        default_headers = ['One', 'Two', 'Three']
         table = self.make_one()
-        table.headers = default_headers
+        table.headers = self.default_headers
         # setting the headers stuffs them into obj._headers
-        self.assertEqual(table._headers, default_headers)
         # and determines the column widths - the headers are padded by
         # 14 to just make them more readable when drawn...IMNSHO.
 
@@ -91,12 +91,17 @@ class TestTable(TestCase):
         # third col is 19
         self.assertEqual(table.col_widths.get(2), 19)
 
+    def test_get_headers(self):
+        table = self.make_one()
+        table.col_widths = {0:10, 1:10, 2:10}
+        table._headers = self.default_headers
+
         # getting the headers formats them for the table with rst markup
-        expected = ['=================    =================    ===================',
+        expected = ['==========    ==========    ==========',
                 '\n',
-                '       One                  Two                  Three       ',
+                '   One           Two          Three   ',
                 '\n',
-                '=================    =================    ===================',
+                '==========    ==========    ==========',
                 '\n']
         self.assertEqual(table.headers, expected)
 

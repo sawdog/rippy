@@ -67,7 +67,7 @@ def toctree(tree, maxdepth=1, *args):
 class Table(object):
     """Simple reST Table creator."""
 
-    col_format = '{0:{fill}{align}{width}}'
+    col_format = '{value:{fill}{align}{width}}'
 
     def __init__(self, title=None, headers=(), rows=(), anchor_text=None,
             heading_level=3):
@@ -133,8 +133,9 @@ class Table(object):
             columns = []
             for idx, c in enumerate(row):
                 size = self.col_widths.get(idx)
-                columns.append(self.col_format.format(c, fill=' ', align='<',
-                    width=size))
+                columns.append(self.col_format.format(
+                    value=c, fill=' ', align='<', width=size)
+                               )
             result.append('    '.join(columns))
             result.append('\n')
         return result
@@ -170,8 +171,9 @@ class Table(object):
         for idx, h in enumerate(self._headers):
             size = self.col_widths.get(idx)
             # center the header in the column
-            headers.append(self.col_format.format(h, fill=' ', align='^',
-                width=size))
+            headers.append(self.col_format.format(
+                value=h, fill=' ', align='^',  width=size)
+                           )
         items.append('    '.join(headers))
         items.append('\n')
         items.append(lines)
@@ -201,7 +203,9 @@ class Table(object):
             for idx, h in enumerate(self._headers):
                 size = self.col_widths.get(idx)
                 lines.append(
-                    self.col_format.format('', fill='=', align='<', width=size)
+                    self.col_format.format(
+                        value='', fill='=', align='<', width=size
+                    )
                 )
         self._lines = lines
         return lines
