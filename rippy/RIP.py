@@ -12,7 +12,7 @@ def anchor(name):
     """Return the anchor for a name."""
     if not name:
         return ''
-    return '.. _%s:\n\n' % name
+    return '.. _{name}:\n\n'.format(name=name)
 
 
 def doc(link, text=None):
@@ -22,43 +22,41 @@ def doc(link, text=None):
        link itself as the link text.
 
     """
-    return ':doc:`%(text)s <%(link)s>`' % {'text': text and text or link,
-                                           'link': link}
+    text = text or link
+    return ':doc:`{text} <{link}>`'.format(text=text, link=link)
 
 
 def download(path, text):
     """Generate the rst download syntax"""
-    return ':download:`%s <%s>`' % (text, path)
+    return ':download:`{text} <{path}>`'.format(text=text, path=path)
 
 
 def emphasis(text):
     """emphasize text"""
-    return '*%s*' % text
+    return '*{text}*'.format(text=text)
 
 
 def header(text, level):
     """Generate a header of a given level"""
     if not text:
         return ''
-    return '%(text)s\n%(uline)s\n\n' % {'text': text,
-                                        'uline': header_levels[level] *\
-                                                len(text)}
+    uline = header_levels[level] * len(text)
+    return '{text}\n{uline}\n\n'.format(text=text, uline=uline)
 
 
 def note(text):
     """return a note"""
-    return '.. note::\n\n   %(text)s\n' % {'text': text}
-
+    return '.. note::\n\n   {text}\n'.format(text=text)
 
 def p():
-    """Create a paragraph break.  In reST that is 2 newlines."""
+    """Create a paragraph break.  In ReST that is 2 newlines."""
     return '\n\n'
 
 
 def ref(label, text=None):
     """Link to label with text or label as text"""
-    return ':ref:`%(text)s <%(label)s>`' % {'text': text and text or label,
-                                             'label': label}
+    text = text or label
+    return ':ref:`{text} <{label}>`'.format(text=text, label=label)
 
 
 def toctree(tree, maxdepth=1, *args):
