@@ -54,16 +54,6 @@ class TestTable(TestCase):
         table = self.make_one()
         self.assertEqual(table(), "\nNone\n\n")
 
-    def test_no_title_anchor_text(self):
-        """If anchor text is supplied and no title, it doesn't mean
-           a lot - so just acts as if there's no title and no anchor
-           text.
-
-        """
-        table = self.make_one()
-        table.anchor_text = '.. _foo:\n\n'
-        self.assertEqual(table.title, '\n')
-
     def test_headers(self):
         """Test the getting and setting of the table headers.
 
