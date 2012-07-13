@@ -4,6 +4,14 @@ from unittest import TestCase
 class TestFunctions(TestCase):
     """Test the various rst helper functions"""
 
+
+    def test_no_anchor(self):
+        """Only add anchors if we have names"""
+        from rippy.RIP import anchor
+        self.assertEqual(anchor(None), '')
+        self.assertEqual(anchor(''), '')
+        self.assertEqual(anchor(False), '')
+
     def test_anchor(self):
         """test the anchor function returns markup as expected"""
         from rippy.RIP import anchor
