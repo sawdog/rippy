@@ -22,6 +22,17 @@ class TestTable(TestCase):
         table = self.make_one()
         self.assertEqual(table.title, "\n")
 
+    def test_title_no_anchor(self):
+        table = self.make_one()
+        table.title = "A title"
+        self.assertEqual(table.title, 'A title\n=======\n\n')
+
+    def test_title_with_anchor(self):
+        table = self.make_one()
+        table.title = "A title"
+        table.anchor_text = "TITEL"
+        self.assertEqual(table.title, '.. _TITEL:\n\nA title\n=======\n\n')
+
     def test_default_rows(self):
         """Test the default Table behavior for the rows.
 
