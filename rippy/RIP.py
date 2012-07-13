@@ -10,6 +10,8 @@ header_levels = {1: '#',
 
 def anchor(name):
     """Return the anchor for a name."""
+    if not name:
+        return ''
     return '.. _%s:\n\n' % name
 
 
@@ -105,18 +107,17 @@ class Table(object):
         text.append(p())
         return '   '.join(text)
 
+
+
     @property
     def title(self):
         title = self._title
         if not title:
             return '\n'
 
-        anchor_text = self.anchor_text and self.anchor_text or ''
-        if anchor_text:
-            anchor_text = anchor(anchor_text)
-
         table_header = header(title, self.heading_level)
-        return anchor_text + table_header
+
+        return anchor(self.anchor_text) + table_header
 
     @title.setter
     def title(self, title):
