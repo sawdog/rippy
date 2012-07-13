@@ -50,14 +50,14 @@ class TestTable(TestCase):
     def test_table_call_with_defaults(self):
         """If there are no headers or rows, just returns 'None'"""
         table = self.make_one()
-        self.assertEqual(table(), "\nNone\n\n")
+        self.assertEqual(table(), "None\n\n")
 
     def test_no_title(self):
         table = self.make_one()
-        self.assertEqual(table.title, "\n")
+        self.assertEqual(table.title, '')
         # no title and anchor text results in the same behavior....
         table.anchor_text = '.. _foo:\n\n'
-        self.assertEqual(table.title, '\n')
+        self.assertEqual(table.title, '')
 
     def test_title_no_anchor_text(self):
         """title with no anchor text"""

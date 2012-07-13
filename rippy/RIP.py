@@ -112,11 +112,10 @@ class Table(object):
 
     @property
     def title(self):
-        title = self._title
-        table_header = header(title, self.heading_level)
-        if table_header:
-            return anchor(self.anchor_text) + table_header
-        return '\n'
+        title = header(self._title, self.heading_level)
+        if title:
+            title = anchor(self.anchor_text) + title
+        return title
 
     @title.setter
     def title(self, title):
