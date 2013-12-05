@@ -128,6 +128,10 @@ class Table(object):
         for row in self._rows:
             columns = []
             for idx, c in enumerate(row):
+                # make sure the values are strings
+                if isinstance(c, unicode):
+                    c = c.encode('utf-8')
+
                 size = self.col_widths.get(idx)
                 columns.append(self.col_format.format(
                     value=c, fill=' ', align='<', width=size)
@@ -146,7 +150,13 @@ class Table(object):
             columns = []
             for idx, column in enumerate(row):
                 # ensure we have a string
-                column = str(column)
+                if isinstance(column, unicode):
+                    column = column.encode('utf-8')
+
+                # convert everything else as a string
+                else:
+                    column = str(column)
+
                 if column:
                     size = len(column)
                     if size > self.col_widths.get(idx, 0):
@@ -165,6 +175,9 @@ class Table(object):
         lines = '    '.join(self.lines)
         items = [lines, '\n']
         for idx, h in enumerate(self._headers):
+            # make sure the values are strings
+            if isinstance(h, unicode):
+                h = h.encode('utf-8', 'ignore')
             size = self.col_widths.get(idx)
             # center the header in the column
             headers.append(self.col_format.format(
